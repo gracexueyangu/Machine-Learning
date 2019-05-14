@@ -1,0 +1,131 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(data.table)
+library(zoo)
+library(tidyr)
+```
+
+
+```{r}
+df = read.csv("/Users/zongyangjiao/Desktop/DSO562_Fraud Analytics/project2/FirstCleaned.csv",stringsAsFactors = F,na.strings = '')
+```
+
+```{r}
+head(df)
+str(df)
+df$Transtype = NULL
+
+```
+
+```{r}
+sum(is.na((df$Merchnum)))
+sum(is.na((df$Merch.zip)))
+```
+
+```{r}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+```
+
+merchstate: first group by merchnum, second group by merch.description, third group by merch.zip, finally fill the rest using 'TN'
+```{r}
+sum(is.na(df$Merch.state))
+
+temp = levels(as.factor(df$Merch.state))
+
+l = list()
+for (i in temp){
+  if (!(i %in% state.abb)){l<-append(l,i)}
+}
+
+df <- df %>%
+  mutate(Merch.state = ifelse(Merch.state %in% l, 'others',Merch.state))
+
+df <- df %>%
+  group_by(Merchnum) %>%
+  mutate(Merch.state = na.aggregate(Merch.state,FUN=getmode)) %>%
+  ungroup() %>%
+  group_by(Merch.description) %>%
+  mutate(Merch.state = na.aggregate(Merch.state,FUN=getmode)) %>%
+  ungroup() %>%
+  group_by(Merch.zip) %>%
+  mutate(Merch.state = na.aggregate(Merch.state,FUN=getmode)) %>%
+  ungroup() %>%
+  mutate(Merch.state =replace_na(Merch.state,'TN')) %>%
+  ungroup()
+# there are 93 NA after first fill
+# there are 90 NA after second fill
+# there are 48 NA after third fill
+# finally use 'TN' to fill the rest
+sum(is.na(df$Merch.state))
+
+```
+
+merch.zip: first group by merchnum, second group by merch.description, third group by merch.zip
+```{r}
+df <- df %>%
+  group_by(Merchnum) %>%
+  mutate(Merch.zip = na.aggregate(Merch.zip,FUN=getmode)) %>%
+  ungroup() %>%
+  group_by(Merch.description) %>%
+  mutate(Merch.zip = na.aggregate(Merch.zip,FUN=getmode)) %>%
+  ungroup() %>%
+  group_by(Merch.state) %>%
+  mutate(Merch.zip = na.aggregate(Merch.zip,FUN=getmode)) %>%
+  ungroup()
+  
+sum(is.na((df$Merch.zip)))
+# there are 1048 NA after second filling
+# no NA after third filling
+```
+
+Merchnum: First group by merch.description   
+```{r}
+df <- df %>%
+  group_by(Merch.description) %>%
+  mutate(Merchnum = na.aggregate(Merchnum, FUN = getmode)) %>%
+  ungroup() %>%
+  group_by(Merch.zip) %>%
+  mutate(Merchnum = na.aggregate(Merchnum, FUN = getmode)) %>%
+  ungroup() %>%
+  group_by(Merch.state) %>%
+  mutate(Merchnum = na.aggregate(Merchnum, FUN = getmode)) %>%
+  ungroup()
+
+# There are 2038 NA after first filling
+# There are 161 NA after second filling
+sum(is.na((temp4$Merchnum)))
+```
+
+```{r}
+write_csv(df,'BeforeVariableCreate.csv')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
