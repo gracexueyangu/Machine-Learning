@@ -1,0 +1,293 @@
+---
+title: "DSO 530 - Homework 2"
+author: "Xueyan Gu"
+date: "2/24/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ISLR Chapter 4
+## 4.7 Exercises
+
+
+7. Answer:
+If we put the parameters and given number into the formula $p_k(x) = P(Y=k|X=x)$:
+$$p_1(4)=\frac{0.8e^{(-1/72)(4-10)^2}}{0.8e^{(-1/72)(4-10)^2}+ 0.2e^{(-1/72)(4-0)^2}} = 0.752$$
+
+So, we can get that the probability that a company will issue a dividend this year given that its percentage return was X=4 last year is 0.752.
+
+10.  Answer:
+(a)
+```{r}
+library(ISLR)
+summary(Weekly)
+```
+```{r}
+cor(Weekly[ , -9])
+```
+```{r}
+attach(Weekly)
+plot(Volume)
+```
+\
+As we can see from the graph, the correlations between the "lag1" to "lag5" variables and "today's returns" variables are close to zero. The correlation between "Year" and "Volume", which is 0.84, is the most substantial. If we plot "Volume" variable, we can see that "Volume" is increasing as time went by.
+
+
+(b) Logistic regression:
+```{r}
+fit.glm1 = glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
+summary(fit.glm1)
+```
+\
+As we can see from the result, "Lag2" variable is the statistically significant predictor because its p-value is less than 0.05.
+
+(c) Confusion matrix:
+```{r}
+probs1 = predict(fit.glm1, type = "response")
+pred.glm1 = rep("Down", length(probs1))
+pred.glm1[probs1 > 0.5] = "Up"
+table(pred.glm1, Direction)
+```
+\
+As we can see from the result, the percentage of correct predictions on the data set is (54+557)/1089, which is equal to 56.11%. That is to say, the training error rate is (1-56.11%), which is 43.89%. Further, we can conclude that when the market goes up, the model gives correct predictions 557/(48+557), which is 92.07% of the time. Also, when the market goes down, the model gives correct predictions 54/(54+430), which is 11.16% of the time.
+
+
+
+(d) Fit the model:
+```{r}
+# Filter the data
+
+training = (Year < 2009)
+Weekly_20092010 = Weekly[!training, ]
+Direction_20092010 = Direction[!training]
+fit.glm2 = glm(Direction ~ Lag2, data = Weekly, family = binomial, subset = training)
+summary(fit.glm2)
+```
+```{r}
+# Build up a confusion matrix
+
+probs2 = predict(fit.glm2, Weekly_20092010, type = "response")
+pred.glm2 = rep("Down", length(probs2))
+pred.glm2[probs2 > 0.5] = "Up"
+table(pred.glm2, Direction_20092010)
+```
+\
+As we can see from the result, the percentage of correct predictions on the test data is (9+56)/104, which is equal to 62.5%. That is to say, the test error rate is (1-62.5%), which is 37.5%. Further, we can conclude that when the market goes up, the model gives correct predictions 56/(56+5), which is 91.80% of the time. Also, when the market goes down, the model gives correct predictions 9/(9+34), which is 20.93% of the time.
+
+
+
+(e) LDA:
+```{r}
+# Build a LDA model
+
+library(MASS)
+fit.lda = lda(Direction ~ Lag2, data = Weekly, subset = training)
+fit.lda
+```
+```{r}
+# Build up a confusion matrix
+
+pred.lda = predict(fit.lda, Weekly_20092010)
+table(pred.lda$class, Direction_20092010)
+```
+\
+As we can see from the table, the result is almost the same as the result from logistic regression model. We can see that the percentage of correct predictions on the test data is (9+56)/104, which is equal to 62.5%. That is to say, the test error rate is (1-62.5%), which is 37.5%. Further, we can conclude that when the market goes up, the model gives correct predictions 56/(56+5), which is 91.80% of the time. Also, when the market goes down, the model gives correct predictions 9/(9+34), which is 20.93% of the time.
+
+
+(f) QDA:
+```{r}
+# Build a QDA model
+
+fit.qda = qda(Direction ~ Lag2, data = Weekly, subset = training)
+fit.qda
+```
+
+```{r}
+#Build up a confusion matrix
+
+pred.qda = predict(fit.qda, Weekly_20092010)
+table(pred.qda$class, Direction_20092010)
+```
+\
+As we can see from the result, the percentage of correct predictions on the test data is (61+0)/104, which is equal to 58.65%. That is to say, the test error rate is (1-58.6538462%), which is 41.35%. Further, we can conclude that when the market goes up, the model gives correct predictions 100% of the time. However, when the market goes down, the model gives correct predictions only 0% of the time.
+
+
+
+(g) KNN:
+```{r}
+# Build up a confusion matrix
+
+library(class)
+train.X = as.matrix(Lag2[training])
+test.X = as.matrix(Lag2[!training])
+train_Direction = Direction[training]
+set.seed(1)
+pred.knn = knn(train.X, test.X, train_Direction, k = 1)
+table(pred.knn, Direction_20092010)
+
+```
+\
+As we can see from the result, the percentage of correct predictions on the test data is (21+31)/104, which is equal to 50%. That is to say, the test error rate is 50%. Further, we can conclude that when the market goes up, the model gives correct predictions 31/(30+31), which is 50.82% of the time. Also, when the market goes down, the model gives correct predictions 21/(21+22), which is 48.84% of the time.
+
+
+(h)
+Based on the results above, if we compare the test error rates of different methods, we can see that logistic regression and LDA have the smallest test error rates. Thus, logistic regression and LDA provide the best results on this data.
+
+
+11. Answer:
+(a) 
+```{r}
+# Create a dataset
+
+attach(Auto)
+mpg01 = rep(0, length(mpg))
+mpg01[mpg > median(mpg)] = 1
+Auto = data.frame(Auto, mpg01)
+```
+
+(b)
+```{r}
+cor(Auto[, -9])
+```
+
+```{r}
+pairs(Auto)
+```
+```{r}
+boxplot(cylinders ~ mpg01, data = Auto, main = "Cylinders vs mpg01")
+```
+
+```{r}
+boxplot(displacement ~ mpg01, data = Auto, main = "Displacement vs mpg01")
+```
+```{r}
+boxplot(horsepower ~ mpg01, data = Auto, main = "Horsepower vs mpg01")
+```
+```{r}
+boxplot(weight ~ mpg01, data = Auto, main = "Weight vs mpg01")
+```
+```{r}
+boxplot(acceleration ~ mpg01, data = Auto, main = "Acceleration vs mpg01")
+```
+```{r}
+boxplot(year ~ mpg01, data = Auto, main = "Year vs mpg01")
+```
+```{r}
+boxplot(origin ~ mpg01, data = Auto, main = "Origin vs mpg01")
+```
+\
+As we can see from the graphs avobe, it's possible that there are some associations between “mpg01” and "cylinders","displacement", "horsepower", and "weight" because of the higher correlations.
+
+(c) 
+```{r}
+# Split the data into a traning set and a test set:
+
+train = (c(1:200))
+Auto.train = Auto[train, ]
+Auto.test = Auto[-c(1:200), ]
+mpg01.test = mpg01[-c(1:200)]
+```
+
+(d) LDA:
+```{r}
+fit.lda2 = lda(mpg01 ~ cylinders + weight + displacement + horsepower, data = Auto.train, subset=train)
+fit.lda2
+```
+
+```{r}
+pred.lda2 = predict(fit.lda2, Auto.test)
+table(pred.lda2$class, mpg01.test)
+```
+
+```{r}
+mean(pred.lda2$class != mpg01.test)
+```
+\
+As we can see from the result, the test error rate of the model is (8+12)/192*100% = 10.42%.
+
+(e) QDA:
+```{r}
+fit.qda2 = qda(mpg01 ~ cylinders + weight + displacement + horsepower, data = Auto.train, subset=train)
+fit.qda2
+```
+
+```{r}
+pred.qda2 = predict(fit.qda2, Auto.test)
+table(pred.qda2$class, mpg01.test)
+```
+
+```{r}
+mean(pred.qda2$class != mpg01.test)
+```
+\
+As we can see from the result, the test error rate of the model is (4+22)/192*100% = 13.54%.
+
+
+(f) Losgistic:
+
+```{r}
+
+fit.glm2 = glm(mpg01 ~ cylinders + weight + displacement + horsepower, data = Auto.train, subset=train)
+summary(fit.glm2)
+```
+```{r}
+probs2 = predict(fit.glm2, Auto.test, type = "response")
+pred.glm2 = rep(0, length(probs2))
+pred.glm2[probs2 > 0.5] = 1
+table(pred.glm2, mpg01.test)
+
+```
+```{r}
+mean(pred.glm2 != mpg01.test)
+```
+\
+As we can see from the result, the test error rate of the model is (8+12)/192*100% = 10.42%.
+
+
+(g) KNN:
+
+```{r}
+library(class)
+train.X = cbind(cylinders, weight, displacement, horsepower)[c(1:200), ]
+test.X = cbind(cylinders, weight, displacement, horsepower)[-c(1:200), ]
+train.mpg01 = mpg01[1:200]
+set.seed(1)
+pred.knn = knn(train.X, test.X, train.mpg01, k = 1)
+table(pred.knn, mpg01.test)
+```
+
+```{r}
+mean(pred.knn != mpg01.test)
+```
+\
+As we can see from the result, the test error rate of the model is 16.15% for k = 1.
+
+
+```{r}
+pred.knn = knn(train.X, test.X, train.mpg01, k = 10)
+table(pred.knn, mpg01.test)
+```
+
+```{r}
+mean(pred.knn != mpg01.test)
+```
+\
+As we can see from the result, the test error rate of the model is 15.63% for k = 10.
+
+
+
+
+```{r}
+pred.knn = knn(train.X, test.X, train.mpg01, k = 100)
+table(pred.knn, mpg01.test)
+
+```
+
+```{r}
+mean(pred.knn != mpg01.test)
+```
+\
+As we can see from the result, the test error rate of the model is 13.54% for k = 100. Thus, k = 100 seems to perform the best on this data set.

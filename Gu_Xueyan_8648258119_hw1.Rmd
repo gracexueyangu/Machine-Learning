@@ -1,0 +1,223 @@
+---
+title: "DSO 530 - Homework 1"
+author: "Xueyan Gu"
+date: "2/2/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ISLR Chapter 3
+## 3.7 Exercises
+
+
+1. Answer:
+(1) The null hypotheses related to Table 3.4 are that "TV", "radio" and "newspaper" advertising budgets do not have effects on product sales. In other words, the null hypotheses can be:
+$$H_0^{{1}}:\beta_1 = 0$$
+$$H_0^{{2}}:\beta_2 = 0$$
+$$H_0^{{3}}:\beta_3 = 0$$
+(2) Based on Table 3.4, we can see that the p-values for the advertising budgets of "TV" and "radio" are highly significant since they are less than 0.05. On the other hand, the p-value for the advertising budgets of "newspaper" is not significant since it is greater than 0.05. So we reject $H_0^{{1}}$ and $H_0^{{2}}$ and we do not reject $H_0^{{3}}$, which mean that "TV" and "radio" advertising budgets have effects on product sales while "newspaper" advertising budgets do not affect product sales.
+
+
+3. Answer:\
+(a) 
+The answer is iii. Reasons are as follows:
+The model we get is as follows:
+$$\hat{y} = 50 + 20GPA + 0.07IQ + 35Gender + 0.01GPA × IQ - 10GPA × Gender$$
+For the females, since it is 1 for Female in the model, so we have:
+$$\hat{y} = 85 + 10GPA + 0.07IQ + 0.01GPA × IQ$$
+For the males, since it is 0 for Male in the model, so we have:
+$$\hat{y} = 50 + 20GPA + 0.07IQ + 0.01GPA × IQ$$
+Thus, we can see that if $\hat{y} = 50 + 20GPA > \hat{y} = 85 + 10GPA$, which is $GPA > 3.5$, then GPA is high enough and answer iii is correct.
+
+(b)
+When IQ = 110 and GPA = 4.0, if we put the values into the model, we can get:
+$$\hat{y} = 85 + 40 + 7.7 + 4.4 = 137.1$$
+Thus we can predict that the salary is $137,100.
+
+(c) False. If we want to infer whether GPA/IQ has an effect on the entire model, we need to test the null hypothesis $H_0: \beta\hat4 = 0$ and to look at the p-value based on t test or F test. And we can not draw the conclusion only based on the coefficient of the model.
+\newpage
+4. Answer:
+(a) 
+We expect that one may be lower than the other. Since we know that the relationship between X and Y is linear, we can infer that the linear regression line we get is relatively close to the true regression line. So we can also infer that the training RSS for the linear regression is relatively lower than the training RSS for the cubic regression.
+
+(b) 
+We do not have enough information to conclude but we can make some assumptions. Since the test RSS depends on the test data and we have no information about the test data, so there is not enough information for us to conclude. However, we can make assumptions that the test RSS for cubic regression may be higher than the test RSS for linear regression since there may be more deviations from the training cubic regression model.
+
+(c) 
+We expect that one may be lower than the other. Since we know that the relationship between X and Y is not linear and we have no idea how far it is from linear, so the linear regression we get is hard to be close to the true regression line. Besides, since the cubic regression is more flexible than linear regression, so we can assume that there are less deviations for cubic regression and the training RSS for cubic regression is lower than the training RSS for linear regression.
+
+(d) 
+We do not have enough information to conclude given the known information. Since it is hard to define "how far it is from linear", we do not know it is closer to linear or cubic. If it is closer to linear, the test RSS for linear regression may be lower than the test RSS for cubic regression. Vice Versa. So we have not enough information to conclude.
+
+5. Answer:\
+If we substitute with the equation of $\hat{\beta}$ into the equation $\hat{y_i}=x_i\hat{\beta}$, we can get:
+$$ \hat{y_i} = x_i\frac{\sum^n_{i=1}x_iy_i}{\sum^n_{i^{'}=1}x_i{'}^2}= \sum^n_{i^{'}=1}\frac{x_ix_i{'}}{x_i{'}^2}y_i{'}= \sum^n_{i^{'}=1}a_i{'}y_i{'} $$
+
+6. Answer:\
+The least squares line is:
+$$y = \hat{\beta}_0 + \hat{\beta}_1x$$
+If we substitute x with $\bar{x}$, then we can get:
+$$y = \hat{\beta}_0 + \hat{\beta}_1\bar{x} = \bar{y} - \hat{\beta}_1\bar{x} + \hat{\beta}_1\bar{x}=\bar{y} $$
+Thus, we can conclude that the least squares line always passes through the point $(\bar{x}, \bar{y})$.
+
+7. Answer:\
+The equation of $R^2$ is (given $\bar{y} = 0$):
+$$R^2 = 1-\frac{RSS}{TSS} = 1- \frac{\sum^n_{i=1}(y_i - \hat{y_i})^2}{\sum^n_{j=1}y_j^2}$$
+If we substitute $\hat{y_i} = \hat{\beta}x_i$, we can get:
+$$R^2 = 1-\frac{\sum^n_{i=1}(y_i-\sum^n_{j=1}x_jy_j/\sum^n_{j=1}x_j^2x_i)^2}{\sum^n_{j=1}y_j^2}$$
+$$= \frac{\sum^n_{j=1}y_j^2-(\sum^n_{i=1}y_i^2-2\sum^n_{i=1}y_i(\sum^n_{j=1}x_jy_j/\sum^n_{j=1}x_j^2)x_i +\sum^n_{i=1}(\sum^n_{j=1}x_jy_j/\sum^n_{j=1}x_j^2)^2x_i^2)}{\sum^n_{j=1}y_j^2}$$
+So we can get:
+$$R^2 = \frac{2(\sum^n_{i=1}x_iy_i)^2/\sum^n_{j=1}x_j^2-(\sum^n_{i=1}x_iy_i)^2/\sum^n_{j=1}x_j^2}{\sum^n_{j=1}y_j^2} =\ \frac{(\sum^n_{i=1}x_iy_i)^2}{\sum^n_{j=1}x_j^2\sum^n_{j=1}y_j^2} = r(X,Y)^2$$
+Thus, we can conclude that in the case of linear regression of Y onto X, the $R^2$ statistic is equal to the square of the correlation between X and Y.
+
+8. Answer:
+(a)
+```{r}
+library(ISLR)
+lm.fit = lm(mpg ~ horsepower, data = Auto)
+summary(lm.fit)
+```
+i. 
+If we test the null hypothesis that is:
+$$H_0 : \beta_1 = 0$$
+we can see than the p-value from F test is less than 2.2e-16, which means that there is a relationship between "mpg" and "horsepower".
+
+ii. 
+We can see that R-squared is 0.6059, which means that 60.59% of the variability in the response "mpg" can be explained by using the predictor "horsepower".
+
+iii. 
+Since the coefficient of "horsepower" is -0.157845, which is negative, so the relationship between "mpg" and "horsepower" is negative.
+
+iv. 
+```{r}
+predict(lm.fit, data.frame(horsepower = 98), interval = "confidence")
+```
+```{r}
+predict(lm.fit, data.frame(horsepower = 98), interval = "prediction")
+```
+1) As we can see, the predicted "mpg" associated with a "horsepower" of 98 is 24.46708.
+2) The associated 95% confidence intervals are from 23.97308 to 24.96108.
+3) The associated 95% prediction intervals are from 14.8094 to 34.12476.
+
+\newpage
+(b)
+```{r}
+plot(Auto$horsepower, Auto$mpg, main = "Plot of mpg & horsepower", xlab = "horsepower", ylab = "mpg")
+abline(lm.fit, col = "red")
+```
+(c)
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit)
+```
+\
+As we can see, the first plot which displays the residuals vs. fitted values, shows that there is no linear tendency in the "mpg" and "hoursepower". Besides, the forth plot which displays the residuals vs. leverage values, shows that there are a few outliers and a few leverage points in the data.
+\newpage
+9. Answer:
+(a)
+```{r}
+pairs(Auto)
+```
+
+(b)
+```{r}
+names(Auto)
+#We can see that "name" is the ninth variable.
+```
+```{r}
+cor(Auto[1:8])
+```
+
+(c)
+```{r}
+lm.fit2 = lm(mpg ~ . - name, data = Auto)
+summary(lm.fit2)
+```
+i.
+If we test the null hypothesis that is:
+$$H_0 : \beta_1 = 0$$
+we can see than the p-value from F test is less than 2.2e-16, which means that there is a relationship between "mpg" and the other predictors.
+
+ii.
+If we check the p-values of each predictor's t-statictic, we can conclude that "displacement", "weight", "year", "origin" respectively have a statistically significant relationship to the response "mpg".
+
+
+iii.
+The coefficient of the “year” variable is 0.750773, which suggests that given all other predictors remaining constant, an increase of 1 year results in an increase of 0.7507727 in “mpg”. 
+
+(d)
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit2)
+```
+\
+As we can see, the first plot which displays the residuals vs. fitted values, shows that there is no linear tendency in the data. Besides, the forth plot which displays the residuals vs. leverage values, shows that there are a few outliers and one leverage point in the data.
+
+(e)
+Based on the correlation matrix from (b), we can see that the correlation between "cylinders" and "displacement" and the correlation between "displacement" and "weight" are the highest correlations in the matrix. So we use these two pairs to fit the model with interaction effects.
+```{r}
+lm.fit3 = lm(mpg ~ cylinders * displacement + displacement * weight, data = Auto[, 1:8])
+summary(lm.fit3)
+```
+Based on the p-values, we can see that the interaction between "displacement" and "weight" is statistically significant, while the interaction between "cylinders" and "displacement" is not statistically significant.
+
+(f)
+```{r}
+par(mfrow = c(2, 2))
+plot(log(Auto$horsepower), Auto$mpg)
+plot(sqrt(Auto$horsepower), Auto$mpg)
+plot((Auto$horsepower)^2, Auto$mpg)
+```
+\
+If we select "horsepower" as our only predictor, we can see that the log transformation displays a more linear looking plot.
+
+10. Answer:
+(a)
+```{r}
+lm.fit4 = lm(Sales ~ Price + Urban + US, data = Carseats)
+summary(lm.fit4)
+```
+
+(b)
+
+(1) The coefficient of the "Price" variable shows that given other predictors remaining fixed, the average effect of a price increase of $1 is a decrease of 54.459 units in sales.
+(2) Since "Urban" is a qualitative variable, the coefficient of the "Urban" shows that given other predictors remaining fixed, on average, the unit sales in urban are 21.916 units less than the unit sales in rural.
+(3) Since "US" is a qualitative variable, the coefficient of the "US" shows that given other predictors remaining fixed, on average, the unit sales in the US are 1200.573 units more than the unit sales in the non US area.
+
+(c)
+Based on the result, the model can be written as:
+$$Sales = 13.043469 + (-0.054459) × Price + (-0.021916) × Urban + (1.200573) × US + \epsilon$$
+For "Urban" variable, if Urban = 1, it means that the store is in an urban area, while if Urban = 0, it means that the store is in a rural area.
+For "US" variable, if US = 1, it means that the store is in the US, while if US = 0, it means that the store is in non US area.
+
+(d)
+Based on the result, we can reject the null hypothesis for "Price" and "US" variable.
+
+(e)
+```{r}
+lm.fit5 = lm(Sales ~ Price + US, data = Carseats)
+summary(lm.fit5)
+```
+
+(f)
+Since the adjusted $R^2$ for smaller model is higher than the adjust $R^2$ for bigger model, so we can say that the adjusted $R^2$ for smaller model is better than the one for bigger model.
+For both model, about 23.93% of the variability can be explained by the models.
+
+(g)
+```{r}
+confint(lm.fit5)
+```
+
+(h)
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit5)
+```
+There is evidence of outliers or high leverage observations in the smaller model. As we can see, the forth plot which displays the residuals vs. leverage values, shows that there are a few outliers (higher than 2 or lower than -2) and leverage points (points exceed (p+1)/n (0.01)) in the data.
+
+
+
+
